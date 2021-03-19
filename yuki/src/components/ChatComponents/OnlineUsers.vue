@@ -21,9 +21,16 @@ export default {
         top:0px; right:0px;
         width:280px; height:100%;
         background-color:#111111;
-        padding:20px;
+        padding:0px 20px;
     }
     h1 {
         font-size:1.5rem;
+    }
+
+    /* HIDE ON MOBILE */
+    @media only screen and (max-width: 600px) {
+        .online-users {
+            display:none;
+        }
     }
 </style>

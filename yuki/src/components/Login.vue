@@ -24,6 +24,12 @@
 </template>
 
 <script>
+// Setup message sound
+import {Howl} from 'howler';
+const msgSound = new Howl({
+    src:"/assets/msg.ogg"
+});
+
 // components
 import ColourPickerButton from "./ColourPickerButton.vue";
 export default {
@@ -37,6 +43,9 @@ export default {
             failedInput:false
         }
     },
+    mounted() {
+        document.title = "Login - Sakucord"
+    },
     methods:{
         login() {
             // get username
@@ -45,12 +54,11 @@ export default {
             const state = this.$store.state;
         
             // Set username to user details
-            if (username.length > 3) {
-                state.userDetails.username = username
-                this.failedInput = false
-            } else {
-                this.failedInput = true
-            }
+            if (username.length < 3) return this.failedInput = true;
+            
+            // Set username
+            state.userDetails.username = username
+            this.failedInput = false
 
             // Send new user event to server
             state.socket.emit("set_user_details", state.userDetails);
@@ -61,35 +69,42 @@ export default {
             // Subscribe to client events
             // -- New User Join
             state.socket.on("new_user_join", function(data) {
+                // Push message history to chat
+                state.messages = data.messageArray;
                 // Push join message to chat
-                state.messages.push({username:"System", colour:"green", content:`${data.username} has joined!`});
+                state.messages.push({username:"", colour:"green", content:`${data.username} has joined!`});
+                // Play message sound
+                msgSound.play();
 
-                // Reload user list
-                state.socket.emit("get_all_users", null, response => {
-                    state.onlineUsers = response;
-                });
+                // Reload online users
+                state.onlineUsers = data.onlineUsers
+                console.log(state.onlineUsers)
             })
 
             // -- User Leave
             state.socket.on("user_leave", function(data) {
                 // Push leave message to chat
-                state.messages.push({username:"System", colour:"red", content:`${data.username} has left`});
+                state.messages.push({username:"", colour:"red", content:`${data.username} has left`});
+                // Play message sound
+                msgSound.play();
 
-                // Reload user list
-                state.socket.emit("get_all_users", null, response => {
-                    state.onlineUsers = response;
-                });
+                // Reload online users
+                state.onlineUsers = data.onlineUsers
+                console.log(state.onlineUsers)
             })
 
             // -- Message Posted
             state.socket.on("message", function(data) {
                 // Push message to chat
                 state.messages.push({username:data.username, colour:data.colour, content:data.content});
+                // Play message sound
+                msgSound.play();
             })
 
             // -- Server Disconnect
             state.socket.on("disconnect", function() {
                 state.connectionError = true;
+                state.initialConnection = false;
             });
         }
     }

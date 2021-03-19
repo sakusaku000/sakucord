@@ -1,6 +1,8 @@
 <template>
-    <h5 :class="colour">{{username}}</h5>
-    <p>{{content}}</p>
+    <div class="msgbox">
+        <h5 :class="[colour]">{{username}}</h5>
+        <p>{{content}}</p>
+    </div>
 </template>
 
 <script>
@@ -15,12 +17,14 @@ export default {
 </script>
 
 <style scoped>
+    .msgbox {
+        padding:10px 20px;
+    }
     h5 {
         margin:0px;
     }
     p {
         margin:0px;
-        margin-bottom:20px;
     }
 
     .red {

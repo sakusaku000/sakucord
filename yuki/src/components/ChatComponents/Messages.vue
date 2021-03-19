@@ -1,6 +1,10 @@
 <template>
     <div class="container">
-        <Message v-for="message in $store.state.messages" v-bind:key="message.username" v-bind:username="message.username" v-bind:content="message.content" v-bind:colour="message.colour"/>
+        <Message v-for="message in $store.state.messages" 
+        v-bind:key="message.username" 
+        v-bind:username="message.username" 
+        v-bind:content="message.content" 
+        v-bind:colour="message.colour"/>
     </div>
 </template>
 
@@ -28,8 +32,14 @@ export default {
         top:50px;
         bottom:70px;
         left:0px;
-        right:0px;
-        padding:20px;
+        right:320px;
         overflow-y:scroll;
+    }
+
+    /* EXTEND ON MOBILE */
+    @media only screen and (max-width: 600px) {
+        .container {
+            right:0px;
+        }
     }
 </style>

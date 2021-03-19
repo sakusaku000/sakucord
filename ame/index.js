@@ -22,6 +22,10 @@ app.get("*", function(req, res) {
     return res.redirect(process.env.FRONT_END_ORIGIN_DOMAIN);
 });
 
+// -- STORAGE
+global.onlineUsers = new Map();
+global.messages = new Map();
+
 // On Socket Connections
 io.on("connection", socket => {
     // Log new connection

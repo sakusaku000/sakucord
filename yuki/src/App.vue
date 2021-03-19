@@ -4,9 +4,15 @@
         <Login v-if="!$store.state.loggedIn"/>
         <!-- Chat Screen -->
         <Chat v-if="$store.state.loggedIn"/>
-        <!-- Error Screen -->
-        <ErrorPopup v-if="$store.state.connectionError" errorMessage="Lost connection to server"/>
     </div>
+    <transition name="loadFade">
+        <div class="load" v-if="!$store.state.initialConnection">
+            <h1>Sakucord</h1>
+        </div>
+    </transition>
+
+    <!-- Error Screen -->
+    <ErrorPopup v-if="$store.state.connectionError" errorMessage="Lost connection to server"/>
 </template>
 
 <script>
@@ -26,12 +32,27 @@ export default {
         ErrorPopup
     },
     created() {
+        // Get state
+        const state = this.$store.state;
+
+        // Set page title
+        document.title = "Sakucord"
+
         // Connect to socket server
-        this.$store.state.socket = io.connect(process.env.VUE_APP_SOCKET_SERVER);
+        state.socket = io.connect(process.env.VUE_APP_SOCKET_SERVER);
+        // Set ping timeout
+        const pingTimeout = setTimeout(function() {
+            state.connectionError = true;
+            state.socket = {};
+        }, 15000);
         // Ping socket server
-        this.$store.state.socket.emit("ping", null, response => {
+        state.socket.emit("ping", null, response => {
+            // log ping
             console.log(response);
-            this.$store.state.initialConnection = true;
+            // Cancel timeout
+            clearTimeout(pingTimeout);
+            // Set connection to true
+            state.initialConnection = true;
         })
     }
 }
@@ -52,6 +73,31 @@ html, body {
     --blue-accent:#5EDBDA;
     --pink-accent:#F3A9F4;
 }
+
+/* LOADING SCREEN */
+.load {
+    position:fixed; top:0px; bottom:0px; left:0px; right:0px;
+    display:flex; justify-content:center; align-items:center;
+    color:#2e2e2e;
+    background-color:#fefefe;
+}
+.load h1 {
+    font-weight:100;
+    animation:loadAnim 0.5s infinite;
+}
+@keyframes loadAnim {
+    0% {transform:scale(1)}
+    50% {transform:scale(1.1)}
+    100% {transform:scale(1)}
+}
+
+.loadFade-enter-active, .loadFade-leave-active {
+  transition: opacity .3s;
+}
+.loadFade-enter, .loadFade-leave-to {
+  opacity: 0;
+}
+/* LOADING SCREEN */
 
 /* generic button */
 .standardButton {

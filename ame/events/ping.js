@@ -1,3 +1,5 @@
 exports.run = (io, socket, data, callback) => {
-    return callback("ame pong!");
+    setTimeout(function() {
+        return callback("ame pong!");
+    }, 1000);
 };
