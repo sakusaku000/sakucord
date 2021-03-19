@@ -27,7 +27,7 @@
 // Setup message sound
 import {Howl} from 'howler';
 const msgSound = new Howl({
-    src:"/assets/msg.ogg"
+    src:"assets/msg.ogg"
 });
 
 // components
